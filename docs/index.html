@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile App Maker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #4A6CF7;
+            --primary-dark: #3A5CE5;
+            --accent: #FFD166;
+            --success: #2DD4BF;
+            --danger: #EF4444;
+            --bg-light: #FFFFFF;
+            --bg-dark: #0F172A;
+            --surface-light: #F8FAFC;
+            --surface-dark: #1E293B;
+            --text-light: #1E293B;
+            --text-dark: #F8FAFC;
+            --border-light: #E2E8F0;
+            --border-dark: #334155;
+            --radius: 12px;
+            
+            --btn-highlight-light: rgba(74, 108, 247, 0.1);
+            --btn-highlight-active-light: rgba(74, 108, 247, 0.2);
+            --btn-highlight-dark: rgba(74, 108, 247, 0.15);
+            --btn-highlight-active-dark: rgba(74, 108, 247, 0.25);
+        }
+
+        [data-theme="light"] {
+            --bg-color: var(--bg-light);
+            --surface-color: var(--surface-light);
+            --text-color: var(--text-light);
+            --border-color: var(--border-light);
+            --btn-highlight: var(--btn-highlight-light);
+            --btn-highlight-active: var(--btn-highlight-active-light);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: var(--bg-dark);
+            --surface-color: var(--surface-dark);
+            --text-color: var(--text-dark);
+            --border-color: var(--border-dark);
+            --btn-highlight: var(--btn-highlight-dark);
+            --btn-highlight-active: var(--btn-highlight-active-dark);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            width: 100%;
+            touch-action: manipulation;
+            font-size: 16px;
+            line-height: 1.4;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+            min-height: 60px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo::before {
+            content: "🚀";
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Settings Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 9;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px 16px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Code Tab */
+        .code-tabs {
+            display: flex;
+            background: var(--surface-color);
+            margin: 12px 16px 8px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .code-tab {
+            flex: 1;
+            padding: 10px 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .code-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .code-editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 0 16px 16px 16px;
+            background: var(--surface-color);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .editor-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .editor-btn {
+            padding: 6px 10px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .editor-btn:active {
+            transform: scale(0.95);
+            background: var(--btn-highlight-active);
+        }
+
+        /* Paste button */
+        .paste-btn {
+            padding: 6px 10px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .paste-btn:active {
+            transform: scale(0.95);
+            background: var(--btn-highlight-active);
+        }
+
+        .code-editor {
+            flex: 1;
+            background: var(--surface-color);
+            border: none;
+            padding: 16px;
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Preview Tab */
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-btn {
+            padding: 8px 12px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-btn:active {
+            transform: scale(0.95);
+            background: var(--btn-highlight-active);
+        }
+
+        .preview-content {
+            flex: 1;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Fullscreen Preview */
+        .fullscreen-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .fullscreen-preview.active {
+            display: flex;
+        }
+
+        .fullscreen-header {
+            background: var(--surface-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .fullscreen-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .close-fullscreen {
+            padding: 6px 10px;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .close-fullscreen:active {
+            transform: scale(0.95);
+            background: var(--primary-dark);
+        }
+
+        .fullscreen-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Build Tab */
+        .build-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 24px;
+        }
+
+        .build-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .build-info {
+            text-align: center;
+            max-width: 280px;
+        }
+
+        .build-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .build-desc {
+            color: var(--text-color);
+            opacity: 0.7;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .build-btn {
+            padding: 14px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .build-btn:active {
+            transform: scale(0.98);
+            background: var(--primary-dark);
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 280px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            height: 6px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .build-complete {
+            display: none;
+            text-align: center;
+            color: var(--success);
+            font-weight: 600;
+            gap: 8px;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .download-btn {
+            padding: 12px 24px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: none;
+        }
+
+        .download-btn:active {
+            transform: scale(0.98);
+            background: #1CB9A8;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--surface-color);
+            color: var(--text-color);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Scrollbar */
+        .code-editor::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .code-editor::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .code-editor::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">App Maker</div>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle">🌓</button>
+                <button class="icon-btn" id="settingsBtn">⚙️</button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">App Settings</div>
+                    <button class="close-modal" id="closeModal">✕</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">App Name</label>
+                    <input type="text" class="form-input" id="appName" placeholder="My Awesome App">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Package Name</label>
+                    <input type="text" class="form-input" id="packageName" placeholder="com.example.myapp">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Version</label>
+                    <input type="text" class="form-input" id="appVersion" placeholder="1.0.0">
+                </div>
+                <button class="build-btn" id="saveSettings" style="margin-top: 16px; width: 100%;">
+                    <span>💾</span>
+                    Save Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="code">
+                <span>📝</span>
+                Code
+            </div>
+            <div class="tab" data-tab="preview">
+                <span>👁️</span>
+                Preview
+            </div>
+            <div class="tab" data-tab="build">
+                <span>📦</span>
+                Build
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Code Tab -->
+            <div class="tab-content active" id="codeTab">
+                <div class="code-tabs">
+                    <button class="code-tab active" data-language="html">HTML</button>
+                    <button class="code-tab" data-language="css">CSS</button>
+                    <button class="code-tab" data-language="js">JavaScript</button>
+                </div>
+                
+                <div class="code-editor-container">
+                    <div class="editor-header">
+                        <div class="editor-title" id="editorTitle">HTML Editor</div>
+                        <div class="editor-actions">
+                            <button class="editor-btn" id="clearBtn">
+                                <span>🗑️</span>
+                                Clear
+                            </button>
+                            <button class="paste-btn" id="pasteBtn">
+                                <span>📋</span>
+                                Paste
+                            </button>
+                        </div>
+                    </div>
+                    <textarea class="code-editor" id="codeEditor" placeholder="Start writing your code..."></textarea>
+                </div>
+            </div>
+
+            <!-- Preview Tab -->
+            <div class="tab-content" id="previewTab">
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <div class="preview-title">Live Preview</div>
+                        <div class="preview-actions">
+                            <button class="preview-btn" id="refreshBtn">
+                                <span>🔄</span>
+                                Refresh
+                            </button>
+                            <button class="preview-btn" id="fullscreenBtn">
+                                <span>🔍</span>
+                                Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <iframe class="preview-frame" id="previewFrame"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Build Tab -->
+            <div class="tab-content" id="buildTab">
+                <div class="build-container">
+                    <div class="build-icon">📱</div>
+                    <div class="build-info">
+                        <div class="build-title">Build Your App</div>
+                        <div class="build-desc">Generate APK file for your mobile application</div>
+                    </div>
+                    <button class="build-btn" id="buildBtn">
+                        <span>🔨</span>
+                        Build APK
+                    </button>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="build-complete" id="buildComplete">
+                        <span>✅</span>
+                        APK Ready!
+                    </div>
+                    <a class="download-btn" id="downloadBtn" download="myapp.apk">
+                        <span>📥</span>
+                        Download APK
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fullscreen Preview -->
+        <div class="fullscreen-preview" id="fullscreenPreview">
+            <div class="fullscreen-header">
+                <div class="fullscreen-title">Full Screen Preview</div>
+                <button class="close-fullscreen" id="closeFullscreen">
+                    <span>✕ Close</span>
+                </button>
+            </div>
+            <iframe class="fullscreen-frame" id="fullscreenFrame"></iframe>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        // Default code examples
+        const defaultCode = {
+            html: `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 100%;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        button {
+            background: #FFD166;
+            color: #1A1B3E;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            min-height: 30px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Awesome App</h1>
+        <p>Welcome to your mobile app!</p>
+        <button onclick="showMessage()">Click Me!</button>
+        <p id="message"></p>
+    </div>
+    <script>
+        function showMessage() {
+            document.getElementById('message').textContent = 'Hello! App is working! 🎉';
+        }
+    <\/script>
+</body>
+</html>`,
+            css: `/* Add your CSS styles here */
+body {
+    transition: all 0.3s ease;
+}
+
+.container {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+button:hover {
+    transform: translateY(-2px);
+}`,
+            js: `// Add your JavaScript here
+console.log('App loaded successfully!');
+
+function showMessage() {
+    const message = document.getElementById('message');
+    message.textContent = 'Hello! App is working! 🎉';
+    message.style.color = '#FFD166';
+    
+    // Add some animation
+    message.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        message.style.transform = 'scale(1)';
+    }, 300);
+}`
+        };
+
+        // App State
+        let currentLanguage = 'html';
+        let currentTab = 'code';
+        let currentTheme = 'dark';
+
+        // DOM Elements
+        const codeEditor = document.getElementById('codeEditor');
+        const editorTitle = document.getElementById('editorTitle');
+        const previewFrame = document.getElementById('previewFrame');
+        const fullscreenFrame = document.getElementById('fullscreenFrame');
+
+        // Initialize the app
+        function init() {
+            console.log('Initializing App Maker...');
+            
+            // Load initial state
+            loadCode();
+            updatePreview();
+            loadTheme();
+            loadSettings();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            console.log('App Maker initialized successfully!');
+        }
+
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
+            // Main tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.currentTarget.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            // Code tabs
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const language = e.currentTarget.getAttribute('data-language');
+                    switchLanguage(language);
+                });
+            });
+
+            // Code editor input
+            let previewTimeout;
+            codeEditor.addEventListener('input', () => {
+                saveCode();
+                clearTimeout(previewTimeout);
+                previewTimeout = setTimeout(updatePreview, 500);
+            });
+
+            // Button event listeners
+            document.getElementById('clearBtn').addEventListener('click', clearCode);
+            document.getElementById('pasteBtn').addEventListener('click', pasteCode);
+            document.getElementById('refreshBtn').addEventListener('click', updatePreview);
+            document.getElementById('fullscreenBtn').addEventListener('click', openFullscreen);
+            document.getElementById('closeFullscreen').addEventListener('click', closeFullscreen);
+            document.getElementById('buildBtn').addEventListener('click', buildAPK);
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            
+            // Settings modal
+            document.getElementById('settingsBtn').addEventListener('click', openSettings);
+            document.getElementById('closeModal').addEventListener('click', closeSettings);
+            document.getElementById('saveSettings').addEventListener('click', saveSettings);
+            
+            console.log('All event listeners set up successfully');
+        }
+
+        function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            currentTab = tabName;
+            
+            // Update main tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabName);
+            });
+            
+            // Show content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === `${tabName}Tab`);
+            });
+            
+            // Update preview if switching to preview tab
+            if (tabName === 'preview') {
+                updatePreview();
+            }
+        }
+
+        function switchLanguage(language) {
+            console.log('Switching to language:', language);
+            currentLanguage = language;
+            
+            // Update code tabs
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-language') === language);
+            });
+            
+            // Update editor title
+            editorTitle.textContent = `${language.toUpperCase()} Editor`;
+            
+            // Load code for this language
+            loadCodeForLanguage(language);
+        }
+
+        function loadCodeForLanguage(language) {
+            const savedCode = localStorage.getItem(`appMaker_${language}`);
+            
+            // Use default code if no saved code exists
+            if (savedCode === null) {
+                codeEditor.value = defaultCode[language];
+                saveCode();
+            } else {
+                codeEditor.value = savedCode;
+            }
+        }
+
+        function loadCode() {
+            loadCodeForLanguage('html');
+        }
+
+        function saveCode() {
+            localStorage.setItem(`appMaker_${currentLanguage}`, codeEditor.value);
+        }
+
+        function clearCode() {
+            if (confirm('Clear current code?')) {
+                codeEditor.value = '';
+                saveCode();
+                updatePreview();
+                showToast('Code cleared', 'success');
+            }
+        }
+
+        async function pasteCode() {
+            try {
+                // First try the modern clipboard API
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        insertTextAtCursor(text);
+                        saveCode();
+                        updatePreview();
+                        showToast('Code pasted successfully!', 'success');
+                    } else {
+                        showToast('No text found in clipboard', 'error');
+                    }
+                } else {
+                    // Fallback for browsers that don't support clipboard API
+                    showToast('Please use Ctrl+V to paste', 'info');
+                }
+            } catch (err) {
+                console.error('Failed to read clipboard:', err);
+                
+                // If clipboard API fails, show user-friendly message
+                if (err.name === 'NotAllowedError') {
+                    showToast('Please allow clipboard access or use Ctrl+V', 'error');
+                } else {
+                    showToast('Clipboard not available. Please paste manually.', 'error');
+                }
+            }
+        }
+
+        function insertTextAtCursor(text) {
+            const start = codeEditor.selectionStart;
+            const end = codeEditor.selectionEnd;
+            const currentValue = codeEditor.value;
+            
+            codeEditor.value = currentValue.substring(0, start) + text + currentValue.substring(end);
+            codeEditor.selectionStart = codeEditor.selectionEnd = start + text.length;
+        }
+
+        function updatePreview() {
+            const html = localStorage.getItem('appMaker_html') || defaultCode.html;
+            const css = localStorage.getItem('appMaker_css') || defaultCode.css;
+            const js = localStorage.getItem('appMaker_js') || defaultCode.js;
+            
+            let fullHtml = html;
+            
+            // Inject CSS
+            if (css.trim()) {
+                const styleTag = `<style>${css}</style>`;
+                if (fullHtml.includes('</head>')) {
+                    fullHtml = fullHtml.replace('</head>', `${styleTag}</head>`);
+                } else if (fullHtml.includes('<body>')) {
+                    fullHtml = fullHtml.replace('<body>', `<head>${styleTag}</head><body>`);
+                } else {
+                    fullHtml = styleTag + fullHtml;
+                }
+            }
+            
+            // Inject JS
+            if (js.trim()) {
+                const scriptTag = `<script>${js}<\/script>`;
+                if (fullHtml.includes('</body>')) {
+                    fullHtml = fullHtml.replace('</body>', `${scriptTag}</body>`);
+                } else if (fullHtml.includes('</html>')) {
+                    fullHtml = fullHtml.replace('</html>', `${scriptTag}</html>`);
+                } else {
+                    fullHtml += scriptTag;
+                }
+            }
+            
+            // Update iframes
+            previewFrame.srcdoc = fullHtml;
+            fullscreenFrame.srcdoc = fullHtml;
+        }
+
+        function openFullscreen() {
+            document.getElementById('fullscreenPreview').classList.add('active');
+            showToast('Fullscreen mode activated', 'success');
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenPreview').classList.remove('active');
+        }
+
+        function buildAPK() {
+            const buildBtn = document.getElementById('buildBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const buildComplete = document.getElementById('buildComplete');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            // Check if there's any code
+            const html = localStorage.getItem('appMaker_html') || '';
+            if (!html.trim()) {
+                showToast('Please write some code first!', 'error');
+                switchTab('code');
+                return;
+            }
+            
+            // Show loading state
+            buildBtn.style.display = 'none';
+            progressContainer.style.display = 'block';
+            
+            // Simulate build process
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Show completion
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        buildComplete.style.display = 'flex';
+                        downloadBtn.style.display = 'flex';
+                        
+                        // Create a dummy APK file for download
+                        const appName = document.getElementById('appName').value || 'myapp';
+                        downloadBtn.setAttribute('download', `${appName}.apk`);
+                        downloadBtn.href = URL.createObjectURL(new Blob(['Dummy APK file - This would be your actual app in a real implementation'], {type: 'application/vnd.android.package-archive'}));
+                        
+                        showToast('APK built successfully!', 'success');
+                    }, 300);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 200);
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('appMaker_theme', currentTheme);
+            
+            const themeBtn = document.getElementById('themeToggle');
+            themeBtn.textContent = currentTheme === 'dark' ? '🌓' : '🌙';
+            
+            showToast(`${currentTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, 'success');
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('appMaker_theme') || 'dark';
+            currentTheme = savedTheme;
+            document.body.setAttribute('data-theme', currentTheme);
+            
+            const themeBtn = document.getElementById('themeToggle');
+            themeBtn.textContent = currentTheme === 'dark' ? '🌓' : '🌙';
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function saveSettings() {
+            const appName = document.getElementById('appName').value;
+            const packageName = document.getElementById('packageName').value;
+            const appVersion = document.getElementById('appVersion').value;
+            
+            if (!appName.trim()) {
+                showToast('Please enter an app name', 'error');
+                return;
+            }
+            
+            localStorage.setItem('appMaker_settings', JSON.stringify({
+                appName,
+                packageName,
+                appVersion
+            }));
+            
+            showToast('Settings saved successfully!', 'success');
+            closeSettings();
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('appMaker_settings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                document.getElementById('appName').value = settings.appName || '';
+                document.getElementById('packageName').value = settings.packageName || '';
+                document.getElementById('appVersion').value = settings.appVersion || '';
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialize the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
