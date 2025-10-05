@@ -1,0 +1,42 @@
+name: Android AAB Build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node (for Capacitor)
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Set up Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Install dependencies
+      run: |
+        npm ci || npm install || true
+        npx cap copy android || true
+
+    - name: Make gradlew executable
+      run: chmod +x android/gradlew
+
+    - name: Build Android App Bundle
+      run: |
+        cd android
+        ./gradlew bundleRelease --no-daemon
+
+    - name: Upload AAB artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release.aab
+        path: android/app/build/outputs/bundle/release/app-release.aab

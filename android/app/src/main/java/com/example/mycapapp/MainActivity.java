@@ -1,0 +1,5 @@
+package com.example.mycapapp;
+
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {}

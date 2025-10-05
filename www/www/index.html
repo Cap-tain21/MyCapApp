@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App Maker - Build Android Apps in Browser</title>
+    <meta name="description" content="Create mobile apps using HTML, CSS, and JavaScript. Preview instantly and export as APK.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-mobile-alt"></i>
+                <h1>Web App Maker</h1>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-tab="editor">Editor</button>
+                <button class="nav-btn" data-tab="preview">Preview</button>
+                <button class="nav-btn" data-tab="projects">Projects</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Editor Tab -->
+        <div class="tab-content active" id="editor-tab">
+            <!-- Code Editors Section -->
+            <section class="editors-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-code"></i> Code Editor</h2>
+                    <div class="editor-controls">
+                        <button class="control-btn" id="themeToggle">
+                            <i class="fas fa-moon"></i> Dark Mode
+                        </button>
+                        <button class="control-btn" id="formatCode">
+                            <i class="fas fa-align-left"></i> Format
+                        </button>
+                    </div>
+                </div>
+
+                <div class="editor-tabs">
+                    <button class="editor-tab active" data-editor="html">
+                        <i class="fab fa-html5"></i> HTML
+                    </button>
+                    <button class="editor-tab" data-editor="css">
+                        <i class="fab fa-css3-alt"></i> CSS
+                    </button>
+                    <button class="editor-tab" data-editor="js">
+                        <i class="fab fa-js-square"></i> JavaScript
+                    </button>
+                </div>
+
+                <div class="editor-container">
+                    <div class="code-editor active" id="html-editor">
+                        <div class="editor-header">
+                            <span>index.html</span>
+                            <div class="editor-stats">
+                                <span id="htmlLines">1 line</span>
+                            </div>
+                        </div>
+                        <textarea id="htmlCode" placeholder="<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <!-- Your HTML content here -->
+</body>
+</html>"></textarea>
+                    </div>
+
+                    <div class="code-editor" id="css-editor">
+                        <div class="editor-header">
+                            <span>style.css</span>
+                            <div class="editor-stats">
+                                <span id="cssLines">1 line</span>
+                            </div>
+                        </div>
+                        <textarea id="cssCode" placeholder="/* Your CSS styles here */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}"></textarea>
+                    </div>
+
+                    <div class="code-editor" id="js-editor">
+                        <div class="editor-header">
+                            <span>script.js</span>
+                            <div class="editor-stats">
+                                <span id="jsLines">1 line</span>
+                            </div>
+                        </div>
+                        <textarea id="jsCode" placeholder="// Your JavaScript code here
+console.log('App loaded!');
+
+// Add your functionality here"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="actions-section">
+                <div class="action-buttons">
+                    <button class="action-btn primary" id="runBtn">
+                        <i class="fas fa-play"></i> Run Preview
+                    </button>
+                    <button class="action-btn secondary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save Project
+                    </button>
+                    <button class="action-btn warning" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button class="action-btn success" id="exportBtn">
+                        <i class="fas fa-download"></i> Export APK
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Preview Tab -->
+        <div class="tab-content" id="preview-tab">
+            <section class="preview-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-eye"></i> Live Preview</h2>
+                    <div class="preview-controls">
+                        <button class="control-btn" id="refreshPreview">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <select id="deviceSize">
+                            <option value="mobile">Mobile (100%)</option>
+                            <option value="tablet">Tablet (768x1024)</option>
+                            <option value="desktop">Desktop (100%)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="preview-container">
+                    <div class="device-frame" id="deviceFrame">
+                        <div class="device-header">
+                            <div class="device-notch"></div>
+                        </div>
+                        <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Projects Tab -->
+        <div class="tab-content" id="projects-tab">
+            <section class="projects-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-folder"></i> Saved Projects</h2>
+                    <button class="control-btn" id="newProject">
+                        <i class="fas fa-plus"></i> New Project
+                    </button>
+                </div>
+
+                <div class="projects-grid" id="projectsGrid">
+                    <div class="project-card template">
+                        <div class="project-header">
+                            <h3 class="project-name">Project Name</h3>
+                            <div class="project-actions">
+                                <button class="project-btn load-btn">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="project-btn delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-preview">
+                            <div class="preview-thumbnail"></div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-date">Created: 2024-01-01</span>
+                            <span class="project-size">Size: 1.2 KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No projects yet</h3>
+                    <p>Create your first project to get started!</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Web App Maker. Built with ❤️ using Termux & Node.js</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Documentation</a>
+                <a href="#" class="footer-link">Examples</a>
+                <a href="#" class="footer-link">Settings</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Save Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="projectName" placeholder="Enter project name" class="modal-input">
+                <textarea id="projectDescription" placeholder="Project description (optional)" class="modal-textarea"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary">Cancel</button>
+                <button class="modal-btn primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-cog fa-spin"></i>
+            <p>Building your app...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

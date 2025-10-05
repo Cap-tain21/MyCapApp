@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MyCapApp</string>
+    <string name="title_activity_main">MyCapApp</string>
+    <string name="package_name">com.example.mycapapp</string>
+    <string name="custom_url_scheme">com.example.mycapapp</string>
+</resources>
